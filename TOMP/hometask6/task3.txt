@@ -1,0 +1,2 @@
+sxrose@sxrose-TM1701:~$ LANG=de_DE.utf8 date "+%A, %d. %B %Y"
+Samstag, 29. Oktober 2022

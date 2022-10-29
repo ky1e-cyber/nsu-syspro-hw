@@ -1,0 +1,2 @@
+sxrose@sxrose-TM1701:~$ LANG=ru_RU.utf8 date "+%d %#B %G года, %#A"
+29 октября 2022 года, Суббота
