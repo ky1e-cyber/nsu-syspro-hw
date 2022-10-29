@@ -1,2 +1,1 @@
-# nsu-syspro-hw
-Homeworks from SysPro courses
+### Homeworks from SysPro courses
