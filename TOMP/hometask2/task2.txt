@@ -1,0 +1,5 @@
+============================================ Task 2
+sxrose@sxrose-TM1701:~/programmers-toolkit/hometask2$ grep -o -e '\bвина\b' get | wc -l
+7
+============================================
+
