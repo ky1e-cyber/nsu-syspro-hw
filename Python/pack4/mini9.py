@@ -31,11 +31,18 @@ def format_table(benchmarks: List[str], algos: List[str], results: List[List[flo
         )
     )
 
-
 # surprisingly wackiest thing i have wrote thus far
 
-format_table(
-    ["best case", "the worst case"],
-    ["quick sort", "merge sort", "bubble sort"],
-    [[1.23, 1.56, 2.0], [3.3, 2.9, 3.9]]
-)
+
+if __name__ == "__main__":
+    format_table(
+        ["best case", "worst case"],
+        ["quick sort", "merge sort", "bubble sort"],
+        [[1.23, 1.56, 2.0], [3.3, 2.9, 3.9]]
+    )
+    print()
+    format_table(
+        ["best case", "the worst case"],
+        ["quick sort", "merge sort", "bubble sort"],
+        [[1.23, 1.56, 2.0], [3.33333333, 2.9, 3.9]]
+    )
