@@ -18,7 +18,8 @@ def format_table(benchmarks: List[str], algos: List[str], results: List[List[flo
             [[BENCHMARKS] + benchmarks] + [
                 [col_name] + [
                     results_str[j][i] for j in range(len(results_str))] 
-                    for i, col_name in enumerate(algos)])
+                    for i, col_name in enumerate(algos)]
+        )
     )
 
     print(
