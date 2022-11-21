@@ -1,10 +1,9 @@
 from collections import OrderedDict
-from typing import Any
 
 class LRUCache:
     def __init__(self, capacity=16):
         self._capacity = capacity
-        self._cache_map: OrderedDict[Any, Any] = OrderedDict()
+        self._cache_map = OrderedDict()
 
     def put(self, key, value):
         self._cache_map[key] = value
