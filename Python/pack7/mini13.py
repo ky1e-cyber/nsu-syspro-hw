@@ -1,6 +1,6 @@
 from typing import List, Iterable
 
-def chain(*iters: List[Iterable]):
+def chain(*iters: List[Iterable]) -> Iterable:
     for i in iters:
         yield from i
 

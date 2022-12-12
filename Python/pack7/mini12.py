@@ -1,6 +1,6 @@
 from typing import Iterable
 
-def cycle(itr: Iterable):
+def cycle(itr: Iterable) -> Iterable:
     while True:
         yield from itr
 
