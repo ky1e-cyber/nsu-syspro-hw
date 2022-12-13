@@ -4,31 +4,6 @@ class Singleton:
 
     instance = None
 
-    def _init_make(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)
-        Singleton.__init__ = Singleton._init_get
-
-    def _init_get(self, *args, **kwargs):
-        pass
-
-    def _new_make(cls, *args, **kwargs):
-        Singleton.instance = super().__new__(cls, *args, **kwargs)
-        Singleton.__new__ = Singleton._new_get
-        return Singleton.instance
-
-    def _new_get(cls, *args, **kwargs):
-        return Singleton.instance
-
-    def __new__(cls, *args, **kwargs):
-        return Singleton._new_make(cls, *args, **kwargs)
-
-    def __init__(self, *args, **kwargs):
-        Singleton._init_make(self, *args, **kwargs)
-
-class Singleton:
-
-    instance = None
-
     def _new_get(cls, *args, **kwargs):
         return cls.instance
 
@@ -37,7 +12,7 @@ class Singleton:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        type(self).__init__ = Singleton._init_get
+        type(self).__init__ = Singleton._init_get ## bruh
 
     def __new__(cls, *args, **kwargs):
         cls.instance = super().__new__(cls, *args, **kwargs)
