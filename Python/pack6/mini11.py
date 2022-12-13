@@ -25,10 +25,24 @@ class Singleton:
     def __init__(self, *args, **kwargs):
         Singleton._init_make(self, *args, **kwargs)
 
-    def __del__(self):
-        Singleton.instance = None
-        Singleton.__new__ = Singleton._new_make
-        Singleton.__init__ = Singleton._init_make
+class Singleton:
+
+    instance = None
+
+    def _new_get(cls, *args, **kwargs):
+        return cls.instance
+
+    def _init_get(self, *args, **kwargs):
+        pass
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        type(self).__init__ = Singleton._init_get
+
+    def __new__(cls, *args, **kwargs):
+        cls.instance = super().__new__(cls, *args, **kwargs)
+        cls.__new__ = cls._new_get
+        return cls.instance
 
 if __name__ == "__main__":
     from collections import UserList
