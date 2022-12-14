@@ -7,12 +7,9 @@ class Singleton:
     def _new_get(cls, *args, **kwargs):
         return cls.instance
 
-    def _init_get(self, *args, **kwargs):
-        pass
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        type(self).__init__ = Singleton._init_get ## bruh
+        type(self).__init__ = lambda s, *args, **kwargs: None ## bruh
 
     def __new__(cls, *args, **kwargs):
         cls.instance = super().__new__(cls, *args, **kwargs)
