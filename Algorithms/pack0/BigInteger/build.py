@@ -41,11 +41,13 @@ if __name__ == "__main__":
 
     with open(LOG_FILE_NAME, "w") as log_file:
         ## Special cases
+        print("running special cases tests..")
         run_test(CMD, 0, MAX_INT, log_file)
         run_test(CMD, MAX_INT, 1, log_file)
+        run_test(CMD, MAX_INT, MAX_INT, log_file)
 
         ## Randomize tests
         for n in range(TEST_COUNT):
-            print(f"running test {n + 1}/{TEST_COUNT}")
+            print(f"running test {n + 1}/{TEST_COUNT}..")
             run_test(CMD, rng.randint(0, MAX_INT), rng.randint(1, MAX_INT), log_file)
             

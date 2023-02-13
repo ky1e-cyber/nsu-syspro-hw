@@ -7,9 +7,9 @@ fun longDivision(_dividend: BigInteger, divisor: BigInteger): BigInteger {
 	var dividend = _dividend
 	var quotient = BigInteger.ZERO
 
-	while (dividend > divisor) {
+	while (dividend >= divisor) {
 
-		var multiplier = 1.toBigInteger()
+		var multiplier = BigInteger.ONE
 
 		while (dividend >= multiplier * divisor) {
 			multiplier = (multiplier shl 1)
