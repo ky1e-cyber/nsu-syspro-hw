@@ -1,8 +1,7 @@
 Оценка сложности:
 
 
-`n = dividend.bitLength`
-
+`n = dividend.bitLength` \
 `m = divisor.bitLength`
 
 
