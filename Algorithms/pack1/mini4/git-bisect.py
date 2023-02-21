@@ -15,7 +15,7 @@ class ResultType(Enum):
 
 Result = lambda t: Tuple[ResultType, Optional[t]]
 
-@dataclass(frozen=True)
+@dataclass
 class Commit:
     commit_hash: str
     msg: Optional[str] = None
@@ -35,7 +35,11 @@ class Commit:
         return self._hash
 
     def get_full_info(self, cwd: Path) -> Result(None):
-        res = sp.run(["git", "show", "-s", "--format=%an%n%s", self.commit_hash], capture_output=True, cwd=cwd)
+        res = sp.run(
+            ["git", "show", "-s", "--format=%an%n%s", self.commit_hash], 
+            capture_output=True, 
+            cwd=cwd
+        )
         if res.returncode == 0:
             self.author, self.msg = (
                 res
@@ -72,7 +76,7 @@ def get_full_hash(short_hash: str, cwd: Path) -> Optional[str]:
 
     return (
         ret.stdout.decode(sys.stdout.encoding)[:-1:] 
-        if ret.returncode != 0 else None
+        if ret.returncode == 0 else None
     )
 
 
@@ -90,9 +94,12 @@ def parse_log(repo_dir: Path) -> Result(CommitsList):
             ResultType.Ok, CommitsList(
                 Commit(commit_hash) 
                 for commit_hash 
-                in (ret.stdout
-                    .decode(sys.stdout.encoding)
-                    .splitlines())
+                in (reversed(
+                        ret.stdout
+                        .decode(sys.stdout.encoding)
+                        .splitlines()
+                    )
+                )
             )
         )
     )
@@ -101,7 +108,9 @@ def run_check(check_cmd: List[str], cwd: Path, commit_hash: str) -> Result(int):
     checkout_ret_code: int = (
         sp.run(
             ["git", "checkout", commit_hash], 
-            cwd=cwd, stdout=sp.DEVNULL
+            cwd=cwd, 
+            stdout=sp.DEVNULL,
+            stderr=sp.DEVNULL
         )
         .returncode
     )
@@ -111,9 +120,10 @@ def run_check(check_cmd: List[str], cwd: Path, commit_hash: str) -> Result(int):
     
     return ResultType.Ok, (
         sp.run(
-            cmd, 
+            check_cmd, 
             cwd=cwd, 
-            stdout=sp.DEVNULL
+            stdout=sp.DEVNULL,
+            stderr=sp.DEVNULL
         )
         .returncode
     )
@@ -125,8 +135,9 @@ def bisect(commits: CommitsList, cwd: Path, cmd: List[str]) -> Optional[Commit]:
     good_bound = -1
     bad_bound = len(commits)
 
-    while bad_bound < (good_bound + 1):
+    while good_bound < (bad_bound - 1):
         pivot = (good_bound + bad_bound) // 2
+
         res, exit_code = run_check(cmd, cwd, commits[pivot].commit_hash)
 
         if not res:
@@ -136,7 +147,6 @@ def bisect(commits: CommitsList, cwd: Path, cmd: List[str]) -> Optional[Commit]:
             good_bound = pivot
         else:
             bad_bound = pivot
-
     return commits[bad_bound] if bad_bound < len(commits) else None
 
 ARGV = sys.argv
@@ -147,9 +157,6 @@ USAGE = (f"Usage: {ARGV[0]}"
         " [Commmit hash end] [Check command]"
         )
 
-def exit_script(msg: str, to_commit: Commit):
-    pass
-
 if __name__ == "__main__":
     assert len(ARGV) == 5, "\n" + USAGE
 
@@ -157,20 +164,21 @@ if __name__ == "__main__":
 
     repo_path = Path(repo_path)
 
-
     hash_start, hash_end = map(
-        lambda h: 
-            get_full_hash(h, repo_path) if len(h) < 40 else h, 
-            (hash_start, hash_end)
+        (lambda h: 
+            get_full_hash(h, repo_path) if len(h) < 40 else h), 
+        (hash_start, hash_end)
     )
 
     res_code, commits = parse_log(repo_path)
+
 
     if res_code == ResultType.Err:
         print("Cannot parse commits log", file=sys.stderr)
         exit(1)
 
     commits = commits.get_range(hash_start, hash_end)
+    
     cmd = cmd.split()
 
     current_commit = Commit(
@@ -184,6 +192,7 @@ if __name__ == "__main__":
     )
 
     bad_commit = bisect(commits, repo_path, cmd)
+
     if bad_commit:
         bad_commit.get_full_info(repo_path)
         print(f"Found commit: {bad_commit}")
