@@ -80,9 +80,24 @@ int* merge_sort_inplace(int* nums, size_t nums_size, int* buff, size_t buff_size
 }
 
 int* sortArray(int* nums, int numsSize, int* returnSize) {
+    int* dest = (int* ) malloc(sizeof(int) * numsSize);
+    *returnSize = numsSize;
 
-    
-    return nums;
+    if (numsSize <= 1) {
+        swap(nums, dest); 
+        return dest;
+    } 
+
+    if (numsSize == 2) {
+        size_t ind_of_less = nums[0] < nums[1] ? 0 : 1;
+        swap(nums + ind_of_less, dest);
+        swap(nums + (1 - ind_of_less), dest + 1);
+        return dest;
+    }
+
+    size_t pivot = (numsSize / 2) + (numsSize % 2);
+
+    merge_sort();
+
+    return dest;
 }
-
-
