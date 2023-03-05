@@ -3,41 +3,45 @@
  */
 
 #include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-#include "merge_sort.h"
 
-#define min(a, b) ((a) < (b) ? (a) : (b))
 
+int* merge_sort(int* nums, size_t nums_size, int* dest, size_t dest_size);
+int* merge_sort_inplace(int* nums, size_t nums_size, int* buff, size_t buff_size);
+int* sortArray(int* nums, int numsSize, int* returnSize);
 
 
 void swap(int* a, int* b) {
-    *a ^= *b;
-    *b ^= *a;
-    *a ^= *b;
+    int c = *a;
+    *a = *b;
+    *b = c;
 }
 
-void merge(int* xs, int* ys, size_t xs_size, size_t ys_size, int* dest, size_t dest_size) {
-    assert(dest_size >= (xs_size + ys_size));
+int* bubble_propagation(int* nums, size_t nums_size, size_t elem_index) {
+    while ((elem_index < (nums_size - 1)) && (nums[elem_index] > nums[elem_index + 1])) {
+        swap(nums + (elem_index), nums + (elem_index + 1));
+        elem_index++;
+    }
 
+    return nums;
+}
+
+void merge(int* xs, size_t xs_size, int* ys, size_t ys_size, int* dest, size_t dest_size) {
     size_t xs_ind = 0;
     size_t ys_ind = 0;
     size_t ind = 0;
 
-    for ( ; ind < min(xs_size, ys_size) ; ind++) {
-        swap(dest + ind, xs[xs_ind] < ys[ys_ind] ? (xs + (xs_ind++)) : (ys + (ys_ind++)));
+    while (xs_ind < xs_size && ys_ind < ys_size) 
+        swap(dest + (ind++), xs[xs_ind] < ys[ys_ind] ? (xs + (xs_ind++)) : (ys + (ys_ind++)));
+
+    while (xs_ind < xs_size) {
+        swap(dest + (ind++), xs + (xs_ind++));
     }
 
-    while (xs_ind < xs_size) 
-        swap(dest + (ind++), xs + (xs_ind++));
-
-    while (ys_ind < ys_size)
+    while (ys_ind < ys_size) 
         swap(dest + (ind++), ys + (ys_ind++));
 }
 
 int* merge_sort(int* nums, size_t nums_size, int* dest, size_t dest_size) {
-    assert(dest_size >= nums_size);
-
     if (nums_size <= 1) {
         swap(nums, dest); 
         return dest;
@@ -57,13 +61,11 @@ int* merge_sort(int* nums, size_t nums_size, int* dest, size_t dest_size) {
     merge_sort_inplace(nums, pivot, dest, dest_size);
     merge_sort_inplace(nums + pivot, nums_size - pivot, dest, dest_size);
 
-    merge(nums, nums + pivot, pivot, nums_size - pivot, dest, dest_size);
+    merge(nums, pivot, nums + pivot, nums_size - pivot, dest, dest_size);
     return dest;
 }
 
 int* merge_sort_inplace(int* nums, size_t nums_size, int* buff, size_t buff_size) {
-    assert(buff_size >= nums_size);
-
     if (nums_size <= 1) 
         return nums;
 
@@ -83,7 +85,9 @@ int* sortArray(int* nums, int numsSize, int* returnSize) {
     int* dest = (int* ) malloc(sizeof(int) * numsSize);
     *returnSize = numsSize;
 
-    if (numsSize <= 1) {
+    if (numsSize <= 0) return dest;
+
+    if (numsSize == 1) {
         swap(nums, dest); 
         return dest;
     } 
@@ -95,9 +99,27 @@ int* sortArray(int* nums, int numsSize, int* returnSize) {
         return dest;
     }
 
-    size_t pivot = (numsSize / 2) + (numsSize % 2);
+    size_t buff_start = (numsSize / 2) + (numsSize % 2);
+    merge_sort(nums, numsSize - buff_start, nums + buff_start, numsSize - buff_start);
 
-    merge_sort();
+    size_t size_left_unsorted = buff_start;
+
+    while (size_left_unsorted > 1) {
+        size_t pivot = (size_left_unsorted / 2) + (size_left_unsorted % 2); // right start
+        size_t buff_size = pivot;
+        size_t arr_size = size_left_unsorted - buff_size;
+
+        merge_sort(nums + pivot, arr_size, nums, buff_size);
+        merge(nums, arr_size, nums + size_left_unsorted, numsSize - size_left_unsorted, nums + buff_size, arr_size + (numsSize - size_left_unsorted));
+
+        size_left_unsorted = buff_size;
+    }
+    
+    bubble_propagation(nums, numsSize, 0);
+
+    for (size_t i = 0; i < numsSize; i++) {
+        dest[i] = nums[i];
+    }
 
     return dest;
 }
