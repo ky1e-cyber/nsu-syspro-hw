@@ -42,36 +42,35 @@
 
 .end_macro
   
-.macro check_hex_digit %rcheck, %ruse,  %mark
-  li %ruse, '1'
-  blt %ruse, %rcheck, %mark
-  li %ruse, '9'
-  
-  
-  
+.macro check_hex_digit %rcheck, %ruse,  %mark_if_failed
+	li %ruse, 'f'
+	bgt %rcheck, %ruse, %mark_if_failed
+	
+	
+	
 .end_macro
-
-			
   
 
 main:
+
+
 
 	main_exit:
 		exit 0
   
 
 repl:
-	repl_read_op:
+	repl_read_oper1:
 		read_char
-		beq a0, '\n', repl_read_operands
-		mv t0, a0
-	
-	repl_read_operands:
+		li t0, 'f'
+		bgt a0, t0, repl
+		li t0, 'a'
+		bge a0, t0, repl_read_oper1_letter
 		
-	
-read_operand:
-	read_char
-	li t1, '0'
-	blt a0, main_exit
+		repl_read_oper1_digit:
+		
+		repl_read_oper1_letter:
+		
+		
 	
 	
