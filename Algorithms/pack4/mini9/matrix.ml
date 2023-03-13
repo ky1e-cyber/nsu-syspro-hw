@@ -7,19 +7,19 @@ let rec get_nearest_pow2 = function
   | x -> get_nearest_pow2 (x + 1)
 
 
-let mat_height (m: ('a array) array) =
+let mat_height m =
   Array.length m
 
 
-let mat_width (m: ('a array) array) =
+let mat_width m =
   Array.length (m.(0))
 
 
-let mat_dims (m: ('a array) array) =
+let mat_dims m =
   ((mat_height m), (mat_width m))
 
 
-let mat_sub (m: ('a array) array) row_pos column_pos height width =
+let mat_sub m row_pos column_pos height width =
   Array.map
     (fun a -> (Array.sub a column_pos width))
     (Array.sub m row_pos height)
