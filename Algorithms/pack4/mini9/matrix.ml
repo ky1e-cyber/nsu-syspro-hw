@@ -1,46 +1,53 @@
 let is_pow2 x = (x land (x - 1)) == 0
 
+
+(*TODO: Optimize *)
+let rec get_nearest_pow2 = function
+  | x when (is_pow2 x) -> x
+  | x -> get_nearest_pow2 (x + 1)
+
+
 let mat_height (m: ('a array) array) =
   Array.length m
+
 
 let mat_width (m: ('a array) array) =
   Array.length (m.(0))
 
+
 let mat_dims (m: ('a array) array) =
   ((mat_height m), (mat_width m))
+
 
 let mat_sub (m: ('a array) array) row_pos column_pos height width =
   Array.map
     (fun a -> (Array.sub a column_pos width))
     (Array.sub m row_pos height)
 
+
 let mat_sub_square m row_pos column_pos dim =
   mat_sub m row_pos column_pos dim dim
+
 
 let mat_op f m1 m2 =
   Array.map2 (Array.map2 f) m1 m2
 
+
 let mat_concat_horizontal m1 m2 =
   Array.map2 (Array.append) m1 m2
+
 
 let mat_pad m rows_num columns_num =
   let height, width = mat_dims m in
   Array.append
     (mat_concat_horizontal m (Array.make_matrix height columns_num 0))
-    (Array.make_matrix rows_num (width + column_nums) 0)
+    (Array.make_matrix rows_num (width + columns_num) 0)
 
 
-let mat_pad_square m =
-  match (mat_dims m) with
-  | (height, width) when (height > width) ->
-      mat_pad m 0 (height - width)
-  | (height, width) when (height < width) ->
-      mat_pad m (width - height) 0
-  | _ -> m
+let mat_mul_strassen m1 m2 =
 
-let matrix_mul_strassen m1 m2 =
   let get_squares m dim =
-    let square = mat_sub_square m in    
+    let square = mat_sub_square m in
     (
       square 0 0 dim,
       square dim 0 dim,
@@ -78,7 +85,18 @@ let matrix_mul_strassen m1 m2 =
                 (mat_concat_horizontal q1 q2)
                 (mat_concat_horizontal q3 q4) in
 
-  match ((mat_width m1), (mat_height m2)) with
-  | (m1_width, m2_height) when (m1_width != m2_height) -> None
-  | (m1_width, m2_height) -> let m1_padded = mat_pad_square m1 in
-                             let m2_padded = mat_pad_square m2 in
+  let m1_height, m1_width = mat_dims m1 in
+  let m2_height, m2_width = mat_dims m2 in
+  let padded_dim =
+    get_nearest_pow2
+      (List.fold_right max
+        ([m1_height; m2_height; m1_width; m2_width]) 0) in
+  let m1_height_diff, m1_width_diff =
+    (padded_dim - m1_height), (padded_dim - m1_width) in
+  let m2_height_diff, m2_width_diff =
+    (padded_dim - m2_height), (padded_dim - m2_width) in
+  mat_sub
+    (sqr_mul
+      (mat_pad m1 m1_height_diff m1_width_diff)
+      (mat_pad m2 m2_height_diff m2_width_diff))
+    0 0 m1_height m2_width
