@@ -4,6 +4,16 @@
   ecall
 .end_macro
 
+.macro push_word %rx
+	sw %rx, 0x0(sp)
+	addi sp, -4
+.end_macro
+
+.macro pop_word %rd
+	lw %rd, 0x0(sp)
+	addi sp, 4
+.end_macro
+
 .text
 main:
 	li a7, 12
@@ -39,7 +49,8 @@ mult:
 		bnez a0, mult_loop
 		
 	mv a0, t0
-	ret
+	##ret
+	jalr x0, 0(ra)
 	
 	
 # div10(a) = a // 10
@@ -47,11 +58,18 @@ mult:
 # args: a0 -- a
 # res		a0 -- a // 10
 div10:
-	mv t0, ra
+	
+	li t0, 10
+	ble a0, t0, div10_zero_branch
+	
+	push_word ra
 	
 	
+	pop_word ra
 	
-	mv ra, t0
+	div10_zero_branch:
+		li a0, 0
+	
 	ret
 
 

@@ -23,11 +23,8 @@
   mv a0, %rs
   print_char
 .end_macro
-
-main:
-	j repl
   
-
+ 
 repl:
 
 	# read operands
@@ -94,7 +91,7 @@ repl:
 			j repl_read_oper2
 			
 				
-		repl_read_operator:
+		repl_read_operator:	
 			read_char
 			li 	t0, '+'
 			beq t0, a0, repl_branch_add
