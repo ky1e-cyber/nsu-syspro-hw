@@ -37,7 +37,7 @@ void merge(int* xs, size_t xs_size, int* ys, size_t ys_size, int* dest, size_t d
         swap(dest + (ind++), xs + (xs_ind++));
     }
 
-    while (ys_ind < ys_size) 
+    while (ys_ind < ys_size)
         swap(dest + (ind++), ys + (ys_ind++));
 }
 
@@ -45,7 +45,7 @@ int* merge_sort(int* nums, size_t nums_size, int* dest, size_t dest_size) {
     if (nums_size <= 1) {
         swap(nums, dest); 
         return dest;
-    } 
+    }
 
     if (nums_size == 2) {
         size_t ind_of_less = nums[0] < nums[1] ? 0 : 1;
@@ -88,9 +88,9 @@ int* sortArray(int* nums, int numsSize, int* returnSize) {
     if (numsSize <= 0) return dest;
 
     if (numsSize == 1) {
-        swap(nums, dest); 
+        swap(nums, dest);
         return dest;
-    } 
+    }
 
     if (numsSize == 2) {
         size_t ind_of_less = nums[0] < nums[1] ? 0 : 1;
@@ -114,7 +114,7 @@ int* sortArray(int* nums, int numsSize, int* returnSize) {
 
         size_left_unsorted = buff_size;
     }
-    
+
     bubble_propagation(nums, numsSize, 0);
 
     for (size_t i = 0; i < numsSize; i++) {
