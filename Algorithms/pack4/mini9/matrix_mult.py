@@ -27,7 +27,7 @@ class Matrix():
 
     def mul_classic(self, other): ## -> Matrix
         assert self.dims[1] == other.dims[0]
-        
+
         res = [[0] * other.dims[1] for _ in range(self.dims[0])]
 
         for i, row in enumerate(self._lists):
