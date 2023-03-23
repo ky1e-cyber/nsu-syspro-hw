@@ -7,9 +7,9 @@ def str_radix_sort(strings: List[str]) -> List[str]:
             count_list[ord(s[ind])] += 1
 
         for i in range(1, 128):
-            count_list[i] = count_list[i - 1]
+            count_list[i] += count_list[i - 1]
 
-        ret = strings.copy()
+        ret = [None] * len(strings)
 
         for s in reversed(strings):
             count_list[ord(s[ind])] -= 1
