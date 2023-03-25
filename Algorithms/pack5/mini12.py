@@ -12,16 +12,20 @@ def quicksort(nums: List[int], l: int, r: int) -> None:
         if nums[l] > nums[r]:
             swap(nums, l, r)
         return
+
     pivot = rng.randint(l, r)
     swap(nums, pivot, l)
     i = l + 1
+
     for j in range(l + 1, r + 1):
         if nums[j] <= nums[l]:
             swap(nums, i, j)
             i += 1
+
     swap(nums, l, i - 1)
     quicksort(nums, i, r)
     quicksort(nums, l, i - 2)
+
     return
 
 class Solution:
