@@ -8,14 +8,15 @@ fn partition(nums: &mut [i32]) -> usize {
     let pivot = nums[0];
 
     let mut first_pos = 1;
-    while (first_pos < len) & (nums[first_pos] >= pivot) {
+    while (first_pos < len) & (nums[first_pos] > pivot) {
         first_pos += 1;
+        if first_pos >= len {break;};
     }
 
     for read in (first_pos + 1)..len {
         let x = nums[read];
 
-        let bigger = (nums[read] >= pivot) as usize;
+        let bigger = (nums[read] > pivot) as usize;
         let delta = bigger * (read - first_pos);
 
         nums[first_pos + delta] = nums[first_pos];
@@ -40,9 +41,9 @@ fn _kth_largest(nums: &mut [i32], k: i32) -> i32 {
         );
     } else if p < k - 1 {
         let len = nums.len();
-        return p + 1 + _kth_largest(
+        return _kth_largest(
             &mut nums[(p_point + 1)..len], 
-            k - p + 1
+            k - (p + 1)
         );
     } else {
         return nums[p_point];
@@ -57,5 +58,4 @@ pub fn find_kth_largest(nums: Vec<i32>, k: i32) -> i32 {
 fn main() {
     let a = vec![3,2,1,5,6,4];
     println!("{}", find_kth_largest(a, 2));
-
 }
