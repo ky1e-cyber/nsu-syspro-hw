@@ -6,3 +6,5 @@ __pycache__
 *.cmi
 *.cmx
 *.o
+target
+Cargo.lock
