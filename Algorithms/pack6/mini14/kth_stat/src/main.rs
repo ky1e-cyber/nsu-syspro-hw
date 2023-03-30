@@ -8,7 +8,8 @@ fn partition(nums: &mut [i32]) -> usize {
     let pivot = nums[0];
 
     let mut first_pos = 1;
-    while (first_pos < len) & (nums[first_pos] > pivot) {
+    // (first_pos < len) & (nums[first_pos] > pivot) doesn't work smh??
+    while nums[first_pos] > pivot {
         first_pos += 1;
         if first_pos >= len {break;};
     }
