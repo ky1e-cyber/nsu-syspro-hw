@@ -49,8 +49,7 @@ mult:
 		bnez a0, mult_loop
 		
 	mv a0, t0
-	##ret
-	jalr x0, 0(ra)
+	ret
 	
 	
 # div10(a) = a // 10
