@@ -25,8 +25,9 @@ fn qsort_lomuto_standart(slice: &mut [i32]) -> () {
     let pivot = slice[0];
 
     let mut first_pos = 1;
-    while (first_pos < len) & (slice[first_pos] <= pivot) {
+    while slice[first_pos] <= pivot {
         first_pos += 1;
+        if first_pos >= len {break;}
     }
 
     for read in (first_pos + 1)..len {
@@ -44,7 +45,7 @@ fn qsort_lomuto_standart(slice: &mut [i32]) -> () {
 }
 
 fn qsort_hoare(slice: &mut [i32]) -> () {
-    let len = slice.len();
+    let len =slice.len();
 
     if len < 2 {
         return;
@@ -56,26 +57,33 @@ fn qsort_hoare(slice: &mut [i32]) -> () {
 
     let pivot = slice[0];
 
-    let mut left: usize = 1;
-    let mut right: usize = len - 1;
+    let pivot_pos =  {
+        let mut left: usize = 1;
+        let mut right: usize = len - 1;
+        'outer: loop {
+            while slice[right] > pivot {
+                right -= 1;
+                if right == 0 {
+                    break 'outer 0;
+                }
+            }
 
-    let pivot_pos = loop {
-        while slice[left] <= pivot {
-            left += 1;
+            while slice[left] <= pivot {
+                left += 1;
+                if left == len {
+                    break 'outer len - 1;
+                }
+            }
+
+            if left > right {
+                break right;
+            }
+
+            slice.swap(left, right);
         }
-
-        while slice[right] > pivot {
-            right -= 1;
-        }
-
-        if right <= left {
-            slice.swap(0, right);
-            break right;
-        }
-
-        slice.swap(left, right);
     };
 
+    slice.swap(0, pivot_pos);
     qsort_hoare(&mut slice[0..pivot_pos]);
     qsort_hoare(&mut slice[pivot_pos + 1..len]);
 
@@ -95,8 +103,9 @@ fn qsort_lomuto_branchless(slice: &mut [i32]) -> () {
     let pivot = slice[0];
 
     let mut first_pos = 1;
-    while (first_pos < len) & (slice[first_pos] <= pivot) {
+    while slice[first_pos] <= pivot {
         first_pos += 1;
+        if first_pos >= len {break;}
     }
 
     for read in (first_pos + 1)..len {
@@ -118,12 +127,17 @@ fn qsort_lomuto_branchless(slice: &mut [i32]) -> () {
 
 }
 
-fn main() {
-    let a = [10, 6, 31, 213, 12, 1, 23123, 12, 123, 32213213, 99999, 54535, 1111];
-    let mut a_copy1 = a;
-    qsort_hoare(&mut a_copy1);
+pub fn sort_array(nums: Vec<i32>) -> Vec<i32> {
+    let mut copy = nums.clone();
+    qsort_hoare(&mut copy);
+    return copy;
+}
 
-    println!("{:?}", a_copy1);
+fn main() {
+    let mut v = vec![2, 2, 2, 2, 2, 2, 2, 2, 2];
+    qsort_hoare(&mut v);
+
+    println!("{:?}", v);
     // let mut a_copy2 = a;
     // println!("{:?}", profile!(qsort_lomuto_standart(&mut a_copy1)));
     // println!("{:?}", profile!(qsort_lomuto_branchless(&mut a_copy2)));
