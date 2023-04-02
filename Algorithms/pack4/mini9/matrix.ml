@@ -18,7 +18,6 @@ let mat_width m =
 let mat_dims m =
   ((mat_height m), (mat_width m))
 
-
 let mat_sub m row_pos column_pos height width =
   Array.map
     (fun a -> (Array.sub a column_pos width))
@@ -43,6 +42,28 @@ let mat_pad m rows_num columns_num =
     (mat_concat_horizontal m (Array.make_matrix height columns_num 0))
     (Array.make_matrix rows_num (width + columns_num) 0)
 
+
+let mat_get_row m row =
+  Array.to_list m.(row)
+
+
+let mat_get_column m column =
+  let rec get_from_kth_rev col_list k =
+    if k <= 0
+    then col_list
+    else get_from_kth_rev ((m.(k).(column)) :: col_list) (k - 1) in
+  get_from_kth_rev [] (mat_height m)
+
+
+let mat_mul_classic m1 m2 =
+  let get_row_list row current_column =
+    if current_column <= 0
+    then 
+
+
+  match (mat_dims m1, mat_dims m2) with
+  | ((_, m1_width), (m2_height, _)) when (m1_width != m2_height) -> None
+  | ((m1_height, m1_width), (m2_height, m2_width)) -> Array.concat ()
 
 let mat_mul_strassen m1 m2 =
 
