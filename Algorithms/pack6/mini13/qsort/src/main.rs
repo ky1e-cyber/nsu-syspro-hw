@@ -61,7 +61,23 @@ fn qsort_hoare(slice: &mut [i32]) -> () {
         let mut left: usize = 1;
         let mut right: usize = len - 1;
         'outer: loop {
-            while slice[right] > pivot {
+            while (slice[left] <= pivot) & (slice[right] >= pivot) {
+                if left == right + 1 {
+                    break 'outer left;
+                }
+                left += 1;
+                right -= 1;
+            }
+            //        v  v
+            // [1, 2, 3, 4, 5, 6]
+            //
+
+            while slice[left] <= pivot {
+                
+
+            }
+
+            while slice[right] >= pivot {
                 right -= 1;
                 if right == 0 {
                     break 'outer 0;
