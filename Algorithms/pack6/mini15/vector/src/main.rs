@@ -38,11 +38,9 @@ impl<T> Vector<T> {
         };
 
         self.cap = new_cap;
-
     }
 
     fn grow(&mut self) {
-
         if self.cap == 0 {
             let layout = Layout::array::<T>(1).unwrap();
             let new_ptr = unsafe {alloc::alloc(layout)};
