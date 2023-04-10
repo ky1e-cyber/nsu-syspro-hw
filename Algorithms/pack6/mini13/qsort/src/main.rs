@@ -10,73 +10,64 @@ macro_rules! profile {
     };
 }
 
-fn qsort_lomuto_standart(slice: &mut [i32]) -> () {
-
+fn qsort_lomuto_standart(slice: &mut [i32]) {
     let len = slice.len();
 
-    if len < 2 {
-        return;
-    }
+    if len < 2 {return;}
 
     if slice.first() > slice.last() {
         slice.swap(0, len - 1);
     }
+
+    if len == 2 {return;}
 
     let pivot = slice[0];
 
-    let mut first_pos = 1;
-    while slice[first_pos] <= pivot {
-        first_pos += 1;
-        if first_pos >= len {break;}
-    }
+    let mut first = 1;
 
-    for read in (first_pos + 1)..len {
-        if slice[read] <= pivot {
-            slice.swap(first_pos, read);
-            first_pos += 1;
+    while slice[first] < pivot {
+        first += 1;
+
+        if first >= len - 1 {
+            slice.swap(0, len - 2);
+            qsort_lomuto_standart(&mut slice[0..len - 2]);
+            return;
         }
     }
 
-    slice.swap(0, first_pos - 1);
-    qsort_lomuto_standart(&mut slice[0..(first_pos - 1)]);
-    qsort_lomuto_standart(&mut slice[first_pos..len]);
+    for read in first..(len - 1) {
+        if slice[read] < pivot {
+            slice.swap(first, read);
+            first += 1;
+        }
+    }
 
-    return; 
+    slice.swap(0, first - 1);
+
+    qsort_lomuto_standart(&mut slice[0 ..(first - 1)]);
+    qsort_lomuto_standart(&mut slice[first..len]);
+
 }
 
 fn qsort_hoare(slice: &mut [i32]) -> () {
-    let len =slice.len();
+    let len = slice.len();
 
-    if len < 2 {
-        return;
-    }
+    if len < 2 {return;}
 
     if slice.first() > slice.last() {
         slice.swap(0, len - 1);
     }
+
+    if len == 2 {return;}
 
     let pivot = slice[0];
 
     let pivot_pos =  {
+
         let mut left: usize = 1;
-        let mut right: usize = len - 1;
+        let mut right: usize = len - 2;
+
         'outer: loop {
-            while (slice[left] <= pivot) & (slice[right] >= pivot) {
-                if left == right + 1 {
-                    break 'outer left;
-                }
-                left += 1;
-                right -= 1;
-            }
-            //        v  v
-            // [1, 2, 3, 4, 5, 6]
-            //
-
-            while slice[left] <= pivot {
-                
-
-            }
-
             while slice[right] >= pivot {
                 right -= 1;
                 if right == 0 {
@@ -84,13 +75,13 @@ fn qsort_hoare(slice: &mut [i32]) -> () {
                 }
             }
 
-            while slice[left] <= pivot {
+            while slice[left] < pivot {
                 left += 1;
                 if left == len {
                     break 'outer len - 1;
                 }
             }
-
+                    
             if left > right {
                 break right;
             }
@@ -101,60 +92,54 @@ fn qsort_hoare(slice: &mut [i32]) -> () {
 
     slice.swap(0, pivot_pos);
     qsort_hoare(&mut slice[0..pivot_pos]);
-    qsort_hoare(&mut slice[pivot_pos + 1..len]);
+    qsort_hoare(&mut slice[(pivot_pos + 1)..len]);
 
 }
 
-fn qsort_lomuto_branchless(slice: &mut [i32]) -> () {
+
+fn qsort_lomuto_branchless(slice: &mut [i32]) {
     let len = slice.len();
 
-    if len < 2 {
-        return;
-    }
+    if len < 2 {return;}
 
     if slice.first() > slice.last() {
         slice.swap(0, len - 1);
     }
 
+    if len == 2 {return;}
+
     let pivot = slice[0];
 
-    let mut first_pos = 1;
-    while slice[first_pos] <= pivot {
-        first_pos += 1;
-        if first_pos >= len {break;}
+    let mut first = 1;
+
+    while slice[first] < pivot {
+        first += 1;
+
+        if first >= len - 1 {
+            slice.swap(0, len - 2);
+            qsort_lomuto_branchless(&mut slice[0..len - 2]);
+            return;
+        }
     }
 
-    for read in (first_pos + 1)..len {
+    for read in first..(len - 1) {
         let x = slice[read];
 
-        let smaller = (slice[read] <= pivot) as usize;
-        let delta = smaller * (read - first_pos);
+        let smaller = -((slice[read] < pivot) as isize);
+        let delta = (smaller as usize) & (read - first);
 
-        slice[first_pos + delta] = slice[first_pos];
+        slice[first + delta] = slice[first];
         slice[read - delta] = x;
 
-        first_pos += smaller;
+        first += (-smaller) as usize;
     }
-    slice.swap(0, first_pos - 1);
-    qsort_lomuto_branchless(&mut slice[0..(first_pos - 1)]);
-    qsort_lomuto_branchless(&mut slice[first_pos..len]);
-
-    return;
+    slice.swap(0, first - 1);
+    qsort_lomuto_branchless(&mut slice[0..(first - 1)]);
+    qsort_lomuto_branchless(&mut slice[first..len]);
 
 }
 
-pub fn sort_array(nums: Vec<i32>) -> Vec<i32> {
-    let mut copy = nums.clone();
-    qsort_hoare(&mut copy);
-    return copy;
-}
 
 fn main() {
-    let mut v = vec![2, 2, 2, 2, 2, 2, 2, 2, 2];
-    qsort_hoare(&mut v);
-
-    println!("{:?}", v);
-    // let mut a_copy2 = a;
-    // println!("{:?}", profile!(qsort_lomuto_standart(&mut a_copy1)));
-    // println!("{:?}", profile!(qsort_lomuto_branchless(&mut a_copy2)));
+    println!("Hello, World");
 }
