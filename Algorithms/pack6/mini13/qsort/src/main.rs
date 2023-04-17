@@ -1,13 +1,42 @@
 use std::time;
+use std::env;
+use std::fs;
 
 macro_rules! profile {
     ($($token:tt)+) => { {
         let _now = time::Instant::now();
         $($token)+;
-        _now.elapsed()
+        _now.elapsed().as_millis()
     }
 
     };
+}
+
+macro_rules! elapse_geom_mean {
+    ($n: expr, $($token:tt)+) => { {
+        let mut _mult = 1;
+        for _ in 0..($n) {
+            _mult *= $($token)+;
+        }
+        (_mult as f64).powf(1.0 / ($n as f64))
+    }
+        
+
+        
+    };
+}
+
+fn parse_string(s: String) -> Vec<i32> {
+    let mut res: Vec<i32> = Vec::new();
+
+    for e in s.split(" ") {
+        match e.parse::<i32>() {
+            Ok(x) => res.push(x),
+            Err(_) => ()
+        }
+    }
+
+    return res;
 }
 
 fn qsort_lomuto_standart(slice: &mut [i32]) {
@@ -139,7 +168,67 @@ fn qsort_lomuto_branchless(slice: &mut [i32]) {
 
 }
 
+const EXPECT_MSG: &str = "Was expecting 2 arguments";
 
 fn main() {
-    println!("Hello, World");
+    let mut arg_iter = env::args();
+
+    //println!("{:?}", Vec::from_iter(arg_iter));
+
+    let input_path =
+        arg_iter
+            .next()
+            .expect(EXPECT_MSG);
+
+    let n_iters: usize =
+        arg_iter
+            .next()
+            .expect(EXPECT_MSG)
+            .parse()
+            .expect("Was expecting integer");
+    
+    let to_sort =
+        parse_string(
+            fs::read_to_string(input_path)
+                .unwrap()
+        );
+
+    let mut unsorted = to_sort.clone();
+
+    let lomuto_standart_elapsed =
+        elapse_geom_mean!(
+            n_iters,
+            profile!(
+                qsort_lomuto_standart(&mut unsorted)
+            )
+        );
+
+    unsorted = to_sort.clone();
+
+    let lomuto_branchless_eplapsed =
+        elapse_geom_mean!(
+            n_iters, 
+            profile!(
+                qsort_lomuto_branchless(&mut unsorted)
+            )
+        );
+
+
+    unsorted = to_sort.clone();
+
+    let hoare_eplapsed =
+        elapse_geom_mean!(
+            n_iters,
+            profile!(
+                qsort_hoare(&mut unsorted)
+            )
+        );
+
+    println!(
+        "{{\"lomuto_standart\": {0}, \"lomuto_branchless\": {1}, \"hoare\": {2}}}",
+        lomuto_standart_elapsed,
+        lomuto_branchless_eplapsed,
+        hoare_eplapsed
+    );
+
 }
