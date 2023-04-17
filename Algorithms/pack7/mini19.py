@@ -1,6 +1,11 @@
 from collections import namedtuple
-from typing import Optional, Tuple, List
+from typing import Optional, List
 
+# Definition for singly-linked list.
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
 
 class BinaryHeap:
 
@@ -64,9 +69,28 @@ class BinaryHeap:
         self._decrease_key(len(self._list ) - 1, key)
 
     def pop(self):
+
+        if len(self._list) == 0:
+            return None
+
         res = self._list[0].value
 
         self._swap_nodes(0, len(self._list) - 1)
+        self._list.pop()
         self._increase_key(0, self._list[0].key)
 
         return res
+    
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        beap = BinaryHeap()
+
+        for lst in lists:
+            if lst:
+                beap.add(lst.val, lst)
+        
+        nxt_node = beap.get_min()
+
+        while 
+
+
