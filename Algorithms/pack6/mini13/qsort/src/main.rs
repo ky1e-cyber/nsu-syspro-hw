@@ -6,7 +6,7 @@ macro_rules! profile {
     ($($token:tt)+) => { {
         let _now = time::Instant::now();
         $($token)+;
-        _now.elapsed().as_millis()
+        _now.elapsed().as_micros()
     }
 
     };
@@ -172,8 +172,7 @@ const EXPECT_MSG: &str = "Was expecting 2 arguments";
 
 fn main() {
     let mut arg_iter = env::args();
-
-    //println!("{:?}", Vec::from_iter(arg_iter));
+    arg_iter.next();
 
     let input_path =
         arg_iter
@@ -213,7 +212,6 @@ fn main() {
             )
         );
 
-
     unsorted = to_sort.clone();
 
     let hoare_eplapsed =
@@ -230,5 +228,6 @@ fn main() {
         lomuto_branchless_eplapsed,
         hoare_eplapsed
     );
-
 }
+
+    
