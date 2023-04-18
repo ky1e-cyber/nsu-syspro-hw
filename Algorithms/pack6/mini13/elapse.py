@@ -18,7 +18,7 @@ def format_table(left_upp: str, rows: List[str], columns: List[str], results: Li
         list(map(lambda n: str(round(n, 2)), seq)) for seq in results]
 
     column_lens: List[int] = list(
-        map(
+        map(    
             lambda xs: max(map(len, xs)),
             [[left_upp] + rows] + [
                 [col_name] + [
@@ -52,7 +52,10 @@ compilation = sp.run(
 )
 
 if compilation.returncode != 0:
-    print(f"Building failed, stderr:\n {compilation.stderr}\n", file=sys.stderr)
+    print(
+        f"Building failed, stderr:\n {compilation.stderr.decode(sys.stderr.encoding)}\n",
+        file=sys.stderr
+    )
     exit(1)
 
 exec_path = (((project_path / 
@@ -67,12 +70,24 @@ elapsed_process = sp.run(
 
 if elapsed_process.returncode != 0:
     print(
-        f"executable crashed, stderr:\n{elapsed_process.stderr}", 
+        f"executable crashed, stderr:\n{elapsed_process.stderr.decode(sys.stderr.encoding)}", 
         file=sys.stderr
     )
     exit(0)
 
-json_table = json.load(elapsed_process.stdout)
+
+print(
+    elapsed_process
+        .stdout
+        .decode(sys.stdout.encoding)
+)
+
+
+json_table = json.loads(
+    elapsed_process
+        .stdout
+        .decode(sys.stdout.encoding)
+)
 
 algos, results = reduce(
     lambda prevs, nxt: (prevs[0] + [nxt[0]], prevs[1] + [nxt[1]]), 
@@ -80,4 +95,4 @@ algos, results = reduce(
     ([], [])
 )
 
-format_table("partitions", algos, ["geometric mean"], results)
+format_table("partitions", algos, ["geometric mean"], [[r] for r in results])
