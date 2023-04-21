@@ -42,7 +42,8 @@ class BinaryHeap:
     
     ## TODO:
     def increase_key(self, ind: int, new_key: int):
-        def max_ind(i):
+
+        def min_child_ind(i):
             if len(self._list) < (2 * i) + 2:
                 return -1
 
@@ -53,20 +54,19 @@ class BinaryHeap:
             right = self._list[(2 * i + 2)]
             
             return (
-                (2 * i + 1) if left.key > right.key 
+                (2 * i + 1) if left.key < right.key 
                 else (2 * i + 2)
             )
         
         self._list[ind].key = new_key
-
-        new_ind = ind
-        child_ind = max_ind(new_ind)
+        curr_ind = ind
+        child_ind = min_child_ind(ind)
 
         while ((child_ind != -1) and 
-               (self._list[new_ind].key > self._list[child_ind].key)):
-            self._swap_nodes(new_ind, child_ind)
-            new_ind = child_ind
-            child_ind = max_ind(new_ind)
+               (self._list[curr_ind].key > self._list[child_ind].key)):
+            self._swap_nodes(curr_ind, child_ind)
+            curr_ind = child_ind
+            child_ind = min_child_ind(curr_ind)
 
 
     def decrease_key(self, ind: int, new_key: int):
@@ -98,6 +98,8 @@ class BinaryHeap:
 
         return res
 
+    def is_empty(self) -> bool:
+        return not bool(self._list)
 
 class Solution:
     def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
@@ -106,6 +108,9 @@ class Solution:
         for lst in lists:
             if lst:
                 beap.add(lst.val, lst)
+
+        if beap.is_empty():
+            return None
 
         curr_node = beap.get_min()
 
