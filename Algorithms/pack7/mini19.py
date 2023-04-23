@@ -139,21 +139,3 @@ class Solution:
             res = res.next
 
         return res_head
-
-
-s = Solution()
-
-l1 = ListNode(val=1)
-l1.next = ListNode(val=4)
-l1.next.next = ListNode(val=5)
-
-
-l2 = ListNode(val=1)
-l2.next = ListNode(val=3)
-l2.next.next = ListNode(val=4)
-
-l3 = ListNode(val=6)
-l3.next = ListNode(val=7)
-
-print(s.mergeKLists([l1, l2, l3]))
-
