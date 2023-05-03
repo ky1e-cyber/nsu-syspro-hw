@@ -26,5 +26,5 @@ def bst_right_turn(root: TreeNode) -> TreeNode:
 class Solution:
 
     def balanceBST(self, root: TreeNode) -> TreeNode:
-
+        pass
 
