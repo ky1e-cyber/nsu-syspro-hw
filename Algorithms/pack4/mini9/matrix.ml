@@ -18,6 +18,7 @@ let mat_width m =
 let mat_dims m =
   ((mat_height m), (mat_width m))
 
+
 let mat_sub m row_pos column_pos height width =
   Array.map
     (fun a -> (Array.sub a column_pos width))
@@ -55,15 +56,31 @@ let mat_get_column m column =
   get_from_kth_rev [] (mat_height m)
 
 
+let dot_product v1 v2 =
+  let rec f v1 v2 acc =
+    match (v1, v2) with
+    | (_, []) -> acc
+    | ([], _) -> acc
+    | (hd1 :: tl1, hd2 :: tl2) -> f tl1 tl2 (acc + hd1 * hd2) in
+  
+  f v1 v2 0
+
 let mat_mul_classic m1 m2 =
-  let get_row_list row current_column =
-    if current_column <= 0
-    then 
 
+  let m1_width = mat_width m1 in
+  let m2_height = mat_height m2 in
 
-  match (mat_dims m1, mat_dims m2) with
-  | ((_, m1_width), (m2_height, _)) when (m1_width != m2_height) -> None
-  | ((m1_height, m1_width), (m2_height, m2_width)) -> Array.concat ()
+  if m1_width != m2_height then None 
+  else
+    let m1_height = mat_height m1 in
+    let m2_width = mat_width m2 in
+
+    let get_row row_ind =
+      let mat_row = mat_get_row m1 row_ind in
+      Array.init m2_width (fun i -> (dot_product mat_row (mat_get_column m2 i))) in
+    
+    Some (Array.init m1_height get_row)
+  
 
 let mat_mul_strassen m1 m2 =
 
@@ -121,3 +138,4 @@ let mat_mul_strassen m1 m2 =
              (mat_pad m1 m1_height_diff m1_width_diff)
              (mat_pad m2 m2_height_diff m2_width_diff))
            0 0 m1_height m2_width)
+
