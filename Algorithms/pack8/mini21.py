@@ -1,3 +1,7 @@
+from collections import deque
+from typing import List, Optional
+
+
 # Definition for a binary tree node.
 class TreeNode(object):
     def __init__(self, x):
@@ -5,21 +9,11 @@ class TreeNode(object):
         self.left = None
         self.right = None
 
-from typing import List, Optional
 
 class Codec:
 
     SEPARATOR = ","
     NULL_TOKEN = "null"
-
-    def push(lst: List[str], ind: int, el: Optional[str]):
-        if el is None:
-            el = Codec.NULL_TOKEN
-
-        while len(lst) <= ind:
-            lst.append(Codec.NULL_TOKEN)
-
-        lst[ind] = el
 
     def serialize(self, root: Optional[TreeNode]) -> str:
         """Encodes a tree to a single string.
@@ -27,21 +21,18 @@ class Codec:
         :type root: TreeNode
         :rtype: str
         """
-        if root == None:
-            return Codec.NULL_TOKEN
 
-        def put_subtree(root: TreeNode, ind: int):
-            Codec.push(lst, ind, str(root.val))
-            if not (root.left is None):
-                put_subtree(root.left, 2 * ind + 1)
-            if not (root.right is None):
-                put_subtree(root.right, 2 * ind + 2)
-        
-        lst = []
-        put_subtree(root, 0)
+        def push(rt: Optional[TreeNode]):
+            if rt == None:
+                stack.append(Codec.NULL_TOKEN)
+            else:
+                stack.append(str(rt.val))
+                push(rt.left)
+                push(rt.right)
 
-
-        return (Codec.SEPARATOR).join(lst)
+        stack = deque()
+        push(root)
+        return (Codec.SEPARATOR).join(stack)
 
     def deserialize(self, data: str) -> TreeNode:
         """Decodes your encoded data to tree.
@@ -50,16 +41,34 @@ class Codec:
         :rtype: TreeNode
         """
 
-        def get_subtree(ind) -> Optional[TreeNode]:
-            if (len(lst) <= ind) or (lst[ind] == Codec.NULL_TOKEN):
+        def get_subtree() -> Optional[TreeNode]:
+            if len(stack) == 0:
                 return None
-            
-            root = TreeNode(int(lst[ind]))
 
-            root.left = get_subtree(2 * ind + 1)
-            root.right = get_subtree(2 * ind + 2)
+            nxt: Optional[int] = stack.popleft()
+            if nxt == None:
+                return None
+            rt = TreeNode(nxt)
+            rt.left = get_subtree()
+            rt.right = get_subtree()
 
-            return root
+            return rt
 
-        lst = data.split(Codec.SEPARATOR)
-        return get_subtree(0)
+        stack = deque(
+            map(
+                lambda s: None if s == Codec.NULL_TOKEN else int(s), 
+                data.split(Codec.SEPARATOR)
+            )
+        )
+
+        return get_subtree()
+
+
+if __name__ == "__main__":
+    ser = "1,2,3,null,null,4,5"
+
+    codec = Codec()
+
+    des = codec.deserialize(ser)
+
+    print(des)

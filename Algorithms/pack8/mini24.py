@@ -6,9 +6,9 @@ class TreeNode:
         self.val = val
         self.left = left
         self.right = right
-class Solution:
-    
 
+
+class Solution:
     def trimBST(self, root: Optional[TreeNode], low: int, high: int) -> Optional[TreeNode]:
         def find_lowest(rt: TreeNode):
             if rt.val < low:
