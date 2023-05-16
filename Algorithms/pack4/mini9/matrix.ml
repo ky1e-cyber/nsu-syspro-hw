@@ -56,70 +56,66 @@ let mat_get_column m column =
   get_from_kth_rev [] (mat_height m)
 
 
-let dot_product v1 v2 =
-  let rec f v1 v2 acc =
-    match (v1, v2) with
-    | (_, []) -> acc
-    | ([], _) -> acc
-    | (hd1 :: tl1, hd2 :: tl2) -> f tl1 tl2 (acc + hd1 * hd2) in
-  
-  f v1 v2 0
+let dot_product (v1: int list) (v2: int list) =
+  List.fold_left2 (fun acc a b -> acc + a * b) 0 v1 v2
+
 
 let mat_mul_classic m1 m2 =
+  let m1_width = mat_width m1 and
+      m2_height = mat_height m2 in
 
-  let m1_width = mat_width m1 in
-  let m2_height = mat_height m2 in
-
-  if m1_width != m2_height then None 
+  if m1_width != m2_height 
+  then None 
   else
-    let m1_height = mat_height m1 in
-    let m2_width = mat_width m2 in
-
+    let m1_height = mat_height m1 and
+        m2_width = mat_width m2 in
     let get_row row_ind =
       let mat_row = mat_get_row m1 row_ind in
       Array.init m2_width (fun i -> (dot_product mat_row (mat_get_column m2 i))) in
-    
+
     Some (Array.init m1_height get_row)
   
 
 let mat_mul_strassen m1 m2 =
 
   let get_squares m dim =
-    let square = mat_sub_square m in
-    (square 0 0 dim,
-     square dim 0 dim,
-     square 0 dim dim,
-     square dim dim dim) in
+    let square = mat_sub_square m in (
+      square 0 0 dim,
+      square dim 0 dim,
+      square 0 dim dim,
+      square dim dim dim
+    ) in
 
   let rec sqr_mul dim m1 m2  =
     match dim with
     | 0 -> Array.make_matrix 0 0 0
     | 1 -> Array.make_matrix 1 1 ( (m1.(0).(0)) * (m2.(0).(0)) )
-    | _ -> let minor_mult = sqr_mul (dim / 2) in 
-           let m1_lu, m1_ld, m1_ru, m1_rd = get_squares m1 (dim / 2) in
-           let m2_lu, m2_ld, m2_ru, m2_rd = get_squares m2 (dim / 2) in
-           let p1 = minor_mult m1_lu (mat_op ( - ) m2_ru m2_rd) in
-           let p2 = minor_mult (mat_op ( + ) m1_lu m1_ru) m2_rd in
-           let p3 = minor_mult (mat_op ( + ) m1_ld m1_rd) m2_lu in
-           let p4 = minor_mult m1_rd (mat_op ( - ) m2_ld m2_lu) in
-           let p5 = minor_mult
-             (mat_op ( + ) m1_lu m1_rd)
-             (mat_op ( + ) m2_lu m2_rd) in
-           let p6 = minor_mult
-             (mat_op ( - ) m1_ru m1_rd)
-             (mat_op ( + ) m2_ld m2_rd) in
-           let p7 = minor_mult
-             (mat_op ( - ) m1_lu m1_ld)
-             (mat_op ( + ) m2_lu m2_ru) in
-           let q1 = mat_op ( + )
-             (mat_op ( - ) (mat_op ( + ) p5 p4) p2) p6 in
-           let q2 = mat_op ( + ) p1 p2 in
-           let q3 = mat_op ( + ) p3 p4 in
-           let q4 = mat_op ( - )
-             (mat_op ( - ) (mat_op ( + ) p1 p5) p3) p7 in
-           Array.append
-             (mat_concat_horizontal q1 q2)
-             (mat_concat_horizontal q3 q4) in
+    | _ -> 
+      let minor_mult = sqr_mul (dim / 2) in
+      let m1_lu, m1_ld, m1_ru, m1_rd = get_squares m1 (dim / 2) and
+          m2_lu, m2_ld, m2_ru, m2_rd = get_squares m2 (dim / 2) in
+      let p1 = minor_mult m1_lu (mat_op ( - ) m2_ru m2_rd) and
+          p2 = minor_mult (mat_op ( + ) m1_lu m1_ru) m2_rd and
+          p3 = minor_mult (mat_op ( + ) m1_ld m1_rd) m2_lu and
+          p4 = minor_mult m1_rd (mat_op ( - ) m2_ld m2_lu) and
+          p5 = minor_mult
+            (mat_op ( + ) m1_lu m1_rd)
+            (mat_op ( + ) m2_lu m2_rd) and
+          p6 = minor_mult
+            (mat_op ( - ) m1_ru m1_rd)
+            (mat_op ( + ) m2_ld m2_rd) and
+          p7 = minor_mult
+            (mat_op ( - ) m1_lu m1_ld)
+            (mat_op ( + ) m2_lu m2_ru) in
+          let q1 = mat_op ( + )
+            (mat_op ( - ) (mat_op ( + ) p5 p4) p2) p6 and
+          q2 = mat_op ( + ) p1 p2 and
+          q3 = mat_op ( + ) p3 p4 and
+          q4 = mat_op ( - )
+            (mat_op ( - ) (mat_op ( + ) p1 p5) p3) p7 in
+      Array.append
+        (mat_concat_horizontal q1 q2)
+        (mat_concat_horizontal q3 q4) in
 
   match ((mat_dims m1), (mat_dims m2)) with
   | ((_, m1_width), (m2_height, _)) when (m1_width != m2_height) -> None
@@ -132,10 +128,12 @@ let mat_mul_strassen m1 m2 =
       (padded_dim - m1_height), (padded_dim - m1_width) in
     let m2_height_diff, m2_width_diff =
       (padded_dim - m2_height), (padded_dim - m2_width) in
-    Some (mat_sub
-           (sqr_mul
-             (padded_dim)
-             (mat_pad m1 m1_height_diff m1_width_diff)
-             (mat_pad m2 m2_height_diff m2_width_diff))
-           0 0 m1_height m2_width)
+    Some (
+      mat_sub
+        (sqr_mul
+          (padded_dim)
+          (mat_pad m1 m1_height_diff m1_width_diff)
+          (mat_pad m2 m2_height_diff m2_width_diff))
+          0 0 m1_height m2_width
+    )
 
