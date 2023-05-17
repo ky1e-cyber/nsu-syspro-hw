@@ -15,13 +15,14 @@
 .end_macro
 
 .macro push_word %rx
-	sw %rx, 0x0(sp)
 	addi sp, sp, -4
+	sw %rx, 0x0(sp)
+	
 .end_macro
 
 .macro pop_word %rd
-	addi sp, sp, 4
 	lw %rd, 0x0(sp)
+	addi sp, sp, 4
 .end_macro
 
 .text
