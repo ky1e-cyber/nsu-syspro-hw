@@ -1,11 +1,22 @@
 let is_pow2 x = (x land (x - 1)) == 0
 
-
+(*
 (*TODO: Optimize *)
 let rec get_nearest_pow2 = function
   | x when (is_pow2 x) -> x
   | x -> get_nearest_pow2 (x + 1)
+*)
 
+
+let get_nearest_pow2 = function
+  | x when (is_pow2 x) -> x
+  | x ->
+    let int_size = Sys.int_size in
+    let rec do_or n d =
+      if d >= int_size 
+      then n 
+      else do_or (n lor (n lsr d)) (d * 2) in
+    (do_or (x - 1) 1) + 1
 
 let mat_height m =
   Array.length m
@@ -125,9 +136,9 @@ let mat_mul_strassen m1 m2 =
         (List.fold_right max
           ([m1_height; m1_width; m2_width]) 0) in
     let m1_height_diff, m1_width_diff =
-      (padded_dim - m1_height), (padded_dim - m1_width) in
-    let m2_height_diff, m2_width_diff =
-      (padded_dim - m2_height), (padded_dim - m2_width) in
+          (padded_dim - m1_height), (padded_dim - m1_width) and
+        m2_height_diff, m2_width_diff =
+          (padded_dim - m2_height), (padded_dim - m2_width) in
     Some (
       mat_sub
         (sqr_mul
