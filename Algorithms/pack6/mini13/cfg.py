@@ -2,8 +2,8 @@ DATA_FILE_PATH = "./data.txt"
 CARGO_PROJECT_PATH = "./qsort"
 CARGO_PROJECT_NAME = "qsort"
 
-N_ITERS = 5
-ARRAY_SIZE = 2 ** 20
+N_ITERS = 3
+ARRAY_SIZE = 2 ** 15
 
 INT_MAX = (2 ** 31) - 1
 INT_MIN = -(2 ** 31)

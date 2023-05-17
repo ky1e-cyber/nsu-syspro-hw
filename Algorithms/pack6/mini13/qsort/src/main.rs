@@ -229,5 +229,3 @@ fn main() {
         hoare_eplapsed
     );
 }
-
-    
