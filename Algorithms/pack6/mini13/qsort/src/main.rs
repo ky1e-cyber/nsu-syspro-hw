@@ -19,10 +19,7 @@ macro_rules! elapse_geom_mean {
             _mult *= $($token)+;
         }
         (_mult as f64).powf(1.0 / ($n as f64))
-    }
-        
-
-        
+    }      
     };
 }
 
