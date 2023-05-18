@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from itertools import chain
+from typing import Callable
 
 class LinkedList:
     class _Node:
@@ -41,22 +42,24 @@ Stack = LinkedList ## yes
 class OperatorInfo:
     left_assoc: bool
     precedence: int
+    arity: int
+    fun: Callable
 
 operator = {
-    "~": OperatorInfo(False, 0),
-    "!": OperatorInfo(False, 0),
-    "%": OperatorInfo(True, 1),
-    "/": OperatorInfo(True, 1),
-    "*": OperatorInfo(True, 1),
-    "+": OperatorInfo(True, 2), 
-    "-": OperatorInfo(True, 2),
-    "<<": OperatorInfo(True, 3),
-    ">>": OperatorInfo(True, 3),
-    "&": OperatorInfo(True, 4),
-    "^": OperatorInfo(True, 5),
-    "|": OperatorInfo(True, 6),
-    "&&": OperatorInfo(True, 7),
-    "||": OperatorInfo(True, 8)
+    "~":    OperatorInfo(False, 0),##, 1, lambda x: ~x),
+    "!":    OperatorInfo(False, 0),##, 1, lambda x: not x),
+    "%":    OperatorInfo(True, 1),##, 2, lambda x, y: x % y),
+    "/":    OperatorInfo(True, 1),##, 2, lambda x, y: x // y),
+    "*":    OperatorInfo(True, 1), ##, 2, lambda x, y: x * y),
+    "+":    OperatorInfo(True, 2), ##, 2, lambda x, y: x  + y), 
+    "-":    OperatorInfo(True, 2),
+    "<<":   OperatorInfo(True, 3),
+    ">>":   OperatorInfo(True, 3),
+    "&":    OperatorInfo(True, 4),
+    "^":    OperatorInfo(True, 5),
+    "|":    OperatorInfo(True, 6),
+    "&&":   OperatorInfo(True, 7),
+    "||":   OperatorInfo(True, 8)
 }
 
 def to_rpn(expr: str) -> str:
@@ -102,3 +105,8 @@ def to_rpn(expr: str) -> str:
     handle_expr()
 
     return " ".join(reversed([node.value for node in out.sequnce()]))
+
+def eval_rpn(expr: str) -> int:
+    stack = reversed(expr.split())
+
+print("3 + 2 * 21 - 3 * (2 + 9)")
