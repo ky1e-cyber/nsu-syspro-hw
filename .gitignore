@@ -8,3 +8,4 @@ __pycache__
 *.o
 target
 Cargo.lock
+_build

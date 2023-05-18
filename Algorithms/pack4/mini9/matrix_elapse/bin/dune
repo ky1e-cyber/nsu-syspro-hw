@@ -1,0 +1,4 @@
+(executable
+ (public_name matrix_elapse)
+ (name main)
+ (libraries matrix_elapse core))
