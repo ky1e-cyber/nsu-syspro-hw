@@ -10,18 +10,21 @@ class TreeNode:
 
 class Solution:
     def trimBST(self, root: Optional[TreeNode], low: int, high: int) -> Optional[TreeNode]:
-        def find_lowest(rt: TreeNode):
-            if rt.val < low:
-                return 
+        def trim_subtree(rt: Optional[TreeNode]) -> Optional[TreeNode]:
+            if rt == None:
+                return None
             
-        low_node = None
+            if rt.val < low:
+                return trim_subtree(rt.right)
+            
+            elif rt.val > high:
+                return trim_subtree(rt.left)
+            
 
-        curr_node = root
+            rt.left = trim_subtree(rt.left)
+            rt.right = trim_subtree(rt.right)
 
-        while (curr_node.val >= low) and (curr_node.left is not None):
-            low_node = curr_node
-            curr_node = curr_node.left
-
-        while (curr_node.val < low) and (curr_node.right is not None):
-            curr_node = curr_node.right
+            return rt
+        
+        return trim_subtree(root)
         
