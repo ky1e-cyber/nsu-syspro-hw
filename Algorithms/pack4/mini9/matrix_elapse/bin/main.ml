@@ -148,5 +148,14 @@ let mat_mul_strassen m1 m2 =
           0 0 m1_height m2_width
     )
 
+let read_lines file =
+  let contents = In_channel.with_open_bin file In_channel.input_all in
+  String.split_on_char '\n' contents
+
+
+let input_matrix filename =
+  let lines = read_lines filename in
+  
+
 let () = print_endline "Hello World"
   

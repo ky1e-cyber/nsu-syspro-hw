@@ -42,11 +42,25 @@ erat_sieve:
 	push_word s2
 	mv fp, sp
 	mv s1, a0
-
+	## const s1 -- n 
+	
 	call calc_aligned
-	sub s1 
 	
 	add sp sp a0
+	li t0 2
+	## (* t0 -- p *)
+	## let table: [bit; n];
+	## let mut p = 2;
+	## while p < n {
+	## 		if table[p] == 0 {
+	## 			let mut k = p * 2;
+	##			while k < n {
+	##				table[k] = 1;
+	##				k = k * p;
+	##			}
+	##		}
+	##		p += 1;
+	## }
 	
 	
 	pop_word s2
