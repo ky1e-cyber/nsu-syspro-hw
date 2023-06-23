@@ -1,3 +1,10 @@
+let read_lines file =
+  let contents = In_channel.with_open_bin file In_channel.input_all in
+  String.split_on_char '\n' contents
+
+let write_lines lines file  =
+  let channel = Out_channel.open_text file in
+  List.fold_left (fun () line -> (Out_channel.output_string channel (line ^ "\n"))) () lines
 
 let profile (thunk: unit -> unit) : Core.Time_ns.Span.t =
   let now_ref = ref Core.Time_ns.min_value_representable and
@@ -6,6 +13,18 @@ let profile (thunk: unit -> unit) : Core.Time_ns.Span.t =
   thunk ();
   end_ref := Core.Time_ns.now ();
   Core.Time_ns.abs_diff (!end_ref) (!now_ref)
+
+let test_algorithms (thunks: (unit -> unit) list) results_filename = 
+  let results = List.map (fun th -> (Core.Time_ns.Span.to_ns (profile th))) thunks in
+  write_lines (List.map string_of_float results) results_filename
+
+let input_matrix filename =
+  let lines = read_lines filename in
+  lines 
+  |> (List.map (fun nxt -> (String.split_on_char ' ' nxt))) 
+  |> (List.map (List.map int_of_string)) 
+  |> (List.map (Array.of_list)) 
+  |> Array.of_list 
 
 let is_pow2 x = (x land (x - 1)) == 0
   
@@ -70,7 +89,7 @@ let mat_get_column m column =
 let dot_product (v1: int list) (v2: int list) =
   List.fold_left2 (fun acc a b -> acc + a * b) 0 v1 v2
 
-
+(*
 let mat_mul_classic m1 m2 =
   let m1_width = mat_width m1 and
       m2_height = mat_height m2 in
@@ -86,7 +105,7 @@ let mat_mul_classic m1 m2 =
 
     Some (Array.init m1_height get_row)
   
-
+*)
 let mat_mul_strassen m1 m2 =
 
   let get_squares m dim =
@@ -95,7 +114,8 @@ let mat_mul_strassen m1 m2 =
       square dim 0 dim,
       square 0 dim dim,
       square dim dim dim
-    ) in
+    ) 
+  in
 
   let rec sqr_mul dim m1 m2  =
     match dim with
@@ -148,14 +168,14 @@ let mat_mul_strassen m1 m2 =
           0 0 m1_height m2_width
     )
 
-let read_lines file =
-  let contents = In_channel.with_open_bin file In_channel.input_all in
-  String.split_on_char '\n' contents
 
+let () = 
+  let thunks = ref [] in
+  for i = 0 to 19 do
+    let matrix1 = input_matrix ("first_matrix_" ^ (string_of_int i)) in
+    let matrix2 = input_matrix ("second_matrix_" ^ (string_of_int i)) in
+    thunks := (fun () -> (ignore (mat_mul_strassen matrix1 matrix2))) :: (!thunks)
+  done;
 
-let input_matrix filename =
-  let lines = read_lines filename in
-  
-
-let () = print_endline "Hello World"
-  
+  test_algorithms !thunks "results"
+ 
