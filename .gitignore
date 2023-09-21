@@ -12,3 +12,7 @@ _build
 
 *.class
 *.jar
+
+
+*.img
+*.bin
