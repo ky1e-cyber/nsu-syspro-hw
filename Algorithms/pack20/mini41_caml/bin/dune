@@ -1,0 +1,4 @@
+(executable
+ (public_name mini41_caml)
+ (name main)
+ (libraries mini41_caml integers))
