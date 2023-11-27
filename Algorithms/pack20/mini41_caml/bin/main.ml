@@ -25,14 +25,14 @@ let permute_QPR x =
 
 let create_random_unique_seq (offset_seed: int) : (unit -> int) =
   if offset_seed < 0 
-    then failwith "Panic! offset_seed for create_random_unique_seq must >= 0";
+    then failwith "Panic! offset_seed for create_random_unique_seq must be >= 0";
   let ind = ref 0 and
       offset = (permute_QPR offset_seed) and
       xor_offset = 0x5bf03635
   in
   let generator () =
     let i = inc ind in
-    if i < 0 
+    if i < 0
       then failwith "Panic! generator limit exceeded (somehow).";
     permute_QPR 
       (Unsigned.UInt32.to_int 
@@ -66,37 +66,45 @@ sig
 end
 
 
-module ImplicitTreap = 
+module Treap = 
 struct
 
 
-  type 'a tree =
-    | Leaf
+  type 'v node = 
+    | Leaf 
     | Node of {
-        value: 'a; 
-        priority: int; 
-        left: 'a tree; right: 'a tree
+        left: 'v node;
+        right: 'v node;
+        element: 'v;
+        priority: int;    
       }
 
-  type 'a t = {
-    tree: 'a tree;
-    _cmp : ('a -> 'a -> int);
-    _priorities_generator: (unit -> int);
+  type ('k, 'v) t = {
+    root: 'v node;
+    (* 
+      k1 > k2 => _cmp_func(k1, k2) > 0; 
+      k1 == k2 => _cmp_func(k1, k2) == 0;
+      else < 0
+    
+    *)
+    _cmp_fn: ('k -> 'k -> int);
+    _key_fn: ('v -> 'k);
   }
-
-  let create_empty (cmp : ('a -> 'a -> int)) =
-    {
-      tree = Leaf;
-      _cmp = cmp;
-      _priorities_generator = create_random_unique_seq (Random.int (Int.max_int));
+  
+  let create_empty (cmp : ('v -> 'v -> int)) 
+                   (key_func: ('v -> 'k)) = {
+      root = Leaf;
+      _cmp_fn = cmp;
+      _key_fn = key_func;
     }
-
-
-  let of_list (cmp: ('a -> 'a -> int)) (lst: 'a list) =
-    let sorted_lst = List.stable_sort cmp lst
-    in
+  
+  let of_list (cmp: ('v -> 'v -> int)) 
+              (key_func: ('v -> 'k)) 
+              (lst: 'a list) =
     ()
 
+  let of_sorted_list (cmp: ('a -> 'a -> int)) (lst: 'a list) = ()
+  
 end
 
 
