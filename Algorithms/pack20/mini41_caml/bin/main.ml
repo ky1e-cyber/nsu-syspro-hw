@@ -41,7 +41,6 @@ let create_random_unique_seq (offset_seed: int) : (unit -> int) =
   in
   generator
 
-
 module type BST =
 sig
 
@@ -85,16 +84,15 @@ struct
     _priorities_generator: (unit -> int);
   }
 
-  let create_emty cmp =
+  let create_empty (cmp : ('a -> 'a -> int)) =
     {
       tree = Leaf;
       _cmp = cmp;
-      _priorities_generator = ()
+      _priorities_generator = create_random_unique_seq (Random.int (Int.max_int));
     }
 
 
   let of_list (cmp: ('a -> 'a -> int)) (lst: 'a list) =
-    Random.self_init ();
     let sorted_lst = List.stable_sort cmp lst
     in
     ()
@@ -113,7 +111,4 @@ let generator_to_list (n: int) (gen : (unit -> int)) : int list =
     if k < 0 then acc else f (k - 1) ((gen ()) :: acc) in
   f n []
 
-
-let () =
-  Random.self_init ();
-  print_int_list (generator_to_list 10 (create_random_unique_seq (Random.int (0b111111111111111111111111111111))))
+let () = print_int_list (generator_to_list 10 (create_random_unique_seq 010010100))
