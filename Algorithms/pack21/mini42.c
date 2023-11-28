@@ -1,8 +1,6 @@
 #include <stdlib.h>
 
-
 #define min(a, b) (a) < (b) ? (a) : (b)
-
 #define max(a ,b) (a) > (b) ? (a) : (b)
 
 typedef struct {
@@ -53,7 +51,7 @@ int segmentTreeGetSum(int* tree, size_t v, size_t tl, size_t tr, size_t l, size_
 
   if (l <= tm) 
     res += segmentTreeGetSum(tree, v << 1, tl, tm, l, min(r, tm));
-  if (l >= tm + 1) 
+  if (r >= tm + 1) 
     res += segmentTreeGetSum(tree, (v << 1) + 1, tm + 1, tr, max(l, tm + 1), r);
 
   return res;
@@ -69,8 +67,6 @@ NumArray* numArrayCreate(int* nums, int numsSize) {
 
   return obj;
 }
-
-
 
 void numArrayUpdate(NumArray* obj, int index, int val) {
     segmentTreeUpdate(obj->segmentTree, index, val, 1, 0, (obj->size) - 1);
