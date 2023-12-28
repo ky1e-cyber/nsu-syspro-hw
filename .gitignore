@@ -16,3 +16,5 @@ _build
 
 *.img
 *.bin
+
+.DS_Store
