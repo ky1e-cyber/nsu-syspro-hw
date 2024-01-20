@@ -21,6 +21,7 @@ _build
 .metals/
 .bloop/
 project/**/metals.sbt
+.scala-build/
 
 *.log
 
